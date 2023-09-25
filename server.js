@@ -7,11 +7,13 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
-
+mongoose.connect(
+  'mongodb+srv://nataliasposts:EHCMOdwye4QL0hWm@bank.tf5nxxs.mongodb.net/userslist?retryWrites=true&w=majority',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
+);
 const User = require('./database/users');
 const Transaction = require('./database/transaction');
 
