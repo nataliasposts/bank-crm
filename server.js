@@ -5,7 +5,13 @@ const cors = require('cors');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://bank-crm-je6zb.ondigitalocean.app',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true
+  })
+);
 
 mongoose.connect(
   'mongodb+srv://nataliasposts:EHCMOdwye4QL0hWm@bank.tf5nxxs.mongodb.net/userslist?retryWrites=true&w=majority',

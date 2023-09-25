@@ -7,7 +7,7 @@ const userApiService: IApiService = {
     try {
       const response = await apiRequest<UserDto[]>({
         method: 'GET',
-        endpoint: `http://165.22.17.207:5000/users`
+        endpoint: `https://165.22.17.207:5000/users`
       });
       return getReactItemsWithKey(response as UserDto[]);
     } catch (error) {
@@ -19,7 +19,7 @@ const userApiService: IApiService = {
     try {
       const response = await apiRequest<UserDto | null>({
         method: 'GET',
-        endpoint: `http://165.22.17.207:5000/users/${userId}`
+        endpoint: `https://165.22.17.207:5000/users/${userId}`
       });
       return response;
     } catch (error) {
