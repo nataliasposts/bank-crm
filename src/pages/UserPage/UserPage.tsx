@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import StyledUserPage from './StyledUserPage';
 import userApiService from '../../api/userApiService';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import UserDto from '../../types/UserDto';
 import transactionApiService from '../../api/transactionApiService';
 import TransactionDto from '../../types/TransactionDto';
@@ -70,16 +70,16 @@ const UserPage = () => {
     }
   }, [user, transactions, userTransaction]);
 
-  const handleSearch = (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     setSearchValue(value);
-  };
+  }, []);
 
   const showOnlyOutcoming = () => {
-    setSortedTable(sourceArray ? sourceArray : []);
+    setSortedTable(sourceArray ?? []);
   };
 
   const showOnlyIncoming = () => {
-    setSortedTable(targetArray ? targetArray : []);
+    setSortedTable(targetArray ?? []);
   };
 
   const showAll = () => {
@@ -91,12 +91,7 @@ const UserPage = () => {
   }, [transactions]);
 
   const handlePreviousPage = () => {
-    setCurrentPage((prevState) => {
-      if (prevState > 1) {
-        return prevState - 1;
-      }
-      return prevState;
-    });
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
   const handleNextPage = () => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import StyledMainPage from './StyledMainPage';
 import UserDto from '../../types/UserDto';
 import SearchComponent from '../../components/SearchComponent/SearchComponent';
@@ -27,9 +27,9 @@ const MainPage = () => {
     return Array.from(users).sort((a, b) => a.name.localeCompare(b.name));
   };
 
-  const handleSearch = (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     setSearchValue(value);
-  };
+  }, []);
 
   const goToUserDetails = (user: UserDto) => {
     navigate(RoutingPath.UserPage.replace(':userId', String(user.id)));
