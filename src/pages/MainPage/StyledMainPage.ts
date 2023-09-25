@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const StyledMainPage = styled.div({
   maxWidth: '100%',
-  padding: '110px 0 125px 0',
+  padding: '80px 0 75px 0',
   flex: '1 0 auto',
   '.container': {
     maxWidth: '1170px',
@@ -29,6 +29,10 @@ const StyledMainPage = styled.div({
   },
   '.click': {
     cursor: 'pointer'
+  },
+  '.user-info': {
+    fontSize: '14px',
+    fontWeight: 'normal'
   }
 });
 export default StyledMainPage;

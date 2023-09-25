@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const StyledUserPage = styled.div({
   maxWidth: '100%',
-  padding: '35px 0 157px 0',
+  padding: '35px 0 57px 0',
   flex: '1 0 auto',
   '.container': {
     maxWidth: '1170px',
@@ -48,10 +48,21 @@ const StyledUserPage = styled.div({
     border: '1 solid',
     borderRadius: '6px',
     background: 'none',
-    padding: '0 15px 0 15px'
+    padding: '0 15px 0 15px',
+    width: '170px'
   },
   '.table-amount': {
     paddingLeft: '15px'
+  },
+  '.table-info': {
+    fontSize: '14px',
+    fontWeight: 'normal'
+  },
+  '.pagination-buttons': {
+    marginTop: '30px',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around'
   }
 });
 

@@ -1,15 +1,20 @@
-import getReactItemsWithKey from '../mapper/sharedMapper';
-import TransactionDto from '../types/TransactionDto';
+import { addKeyToReactItem } from '../mapper/sharedMapper';
+import UserTransactionDto from '../types/UserTransactionDto';
 import apiRequest from './apiRequest';
 
 const transactionApiService: IApiService = {
-  fetchTransactions: async () => {
+  fetchUserTransactions: async (page: number, limit: number, userId: string) => {
     try {
-      const response = await apiRequest<TransactionDto[] | null>({
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', page.toString());
+      queryParams.append('limit', limit.toString());
+      queryParams.append('userId', userId);
+
+      const response = await apiRequest<UserTransactionDto | null>({
         method: 'GET',
-        endpoint: 'http://localhost:5000/transactions'
+        endpoint: `http://localhost:5000/transactions?${queryParams}`
       });
-      return getReactItemsWithKey(response as TransactionDto[]);
+      return addKeyToReactItem(response as UserTransactionDto);
     } catch (error) {
       console.error('Error in fetchTransactions');
       return null;
@@ -18,7 +23,11 @@ const transactionApiService: IApiService = {
 };
 
 interface IApiService {
-  fetchTransactions: () => Promise<TransactionDto[] | null>;
+  fetchUserTransactions: (
+    page: number,
+    limit: number,
+    userId: string
+  ) => Promise<UserTransactionDto | null>;
 }
 
 export default transactionApiService;

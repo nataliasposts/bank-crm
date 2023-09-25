@@ -44,8 +44,32 @@ app.get('/users/:userId', async (req, res) => {
 
 app.get('/transactions', async (req, res) => {
   try {
-    const transactions = await Transaction.find();
-    res.json(transactions);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const userId = req.query.userId;
+
+    const userTransactions = await Transaction.find({
+      $or: [{ sourceId: userId }, { targetId: userId }]
+    })
+      .skip(skip)
+      .limit(limit);
+
+    const allUserTransactions = await Transaction.find({
+      $or: [{ sourceId: userId }, { targetId: userId }]
+    });
+
+    const sourceSum = allUserTransactions
+      .filter((transaction) => transaction.sourceId === userId)
+      .reduce((total, current) => total + current.amount, 0);
+
+    const targetSum = allUserTransactions
+      .filter((transaction) => transaction.targetId === userId)
+      .reduce((total, current) => total + current.amount, 0);
+
+    const finalSum = sourceSum - targetSum;
+
+    res.json({ userTransactions, finalSum });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');

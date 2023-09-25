@@ -44,25 +44,26 @@ const MainPage = () => {
             <thead>
               <tr className="table-element">
                 <th className="table-element header-table-element">
-                  <p>{TextEnum.CLIENTINFO}</p>
+                  <p>{TextEnum.CLIENT_INFO}</p>
                 </th>
               </tr>
             </thead>
             <tbody>
-              {usersList.length > 0 &&
-                sortByAlbhabet(usersList)
-                  .filter((user) => user.name.toLowerCase().includes(searchValue.toLowerCase()))
-                  .map((user) => (
-                    <tr
-                      className="table-element click"
-                      key={user.key}
-                      onClick={() => goToUserDetails(user)}
-                    >
-                      <th className="table-element">
-                        <p>{user.name}</p>
-                      </th>
-                    </tr>
-                  ))}
+              {usersList.length > 0
+                ? sortByAlbhabet(usersList)
+                    .filter((user) => user.name.toLowerCase().includes(searchValue.toLowerCase()))
+                    .map((user) => (
+                      <tr
+                        className="table-element click"
+                        key={user.key}
+                        onClick={() => goToUserDetails(user)}
+                      >
+                        <th className="table-element">
+                          <p className="user-info">{user.name}</p>
+                        </th>
+                      </tr>
+                    ))
+                : null}
             </tbody>
           </table>
         </div>

@@ -4,7 +4,10 @@ enum TextEnum {
   INCOME = 'Show only incoming',
   TRANSACTION = 'Transactions',
   AMOUNT = 'Amount',
-  CLIENTINFO = 'Client name and surname'
+  CLIENT_INFO = "Client's Information",
+  MAIN = 'Main',
+  PREVIOUS_BUTTON = ' Previous',
+  NEXT_BUTTON = 'Next'
 }
 
 export default TextEnum;
