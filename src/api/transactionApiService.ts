@@ -1,5 +1,5 @@
-import { addKeyToReactItem } from '../mapper/sharedMapper';
-import UserTransactionDto from '../types/UserTransactionDto';
+import { addKeyToReactItem } from 'src/mapper/sharedMapper';
+import UserTransactionDto from 'src/types/UserTransactionDto';
 import apiRequest from './apiRequest';
 
 const transactionApiService: IApiService = {
@@ -12,7 +12,7 @@ const transactionApiService: IApiService = {
 
       const response = await apiRequest<UserTransactionDto | null>({
         method: 'GET',
-        endpoint: `http://165.22.17.207:5000/transactions?${queryParams}`
+        endpoint: `http://localhost:5000/transactions?${queryParams}`
       });
       return addKeyToReactItem(response as UserTransactionDto);
     } catch (error) {

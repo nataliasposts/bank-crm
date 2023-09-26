@@ -5,7 +5,7 @@ type SearchComponentProps = {
   onSearch: (value: string) => void;
 };
 
-const SearchComponent = ({ onSearch }: SearchComponentProps) => {
+const SearchComponent: React.FC<SearchComponentProps> = ({ onSearch }: SearchComponentProps) => {
   const [searchValue, setSearchValue] = useState<string>('');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

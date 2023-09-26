@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
+import Footer from 'src/components/Footer/Footer';
+import Header from 'src/components/Header/Header';
 import MainLayoutWrapper from './MainLayoutWrapper';
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
 
 type MainLayoutProps = {
   children: ReactNode;
 };
 
-const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children }: MainLayoutProps) => {
   return (
     <MainLayoutWrapper>
       <Header />

@@ -1,4 +1,4 @@
-import ReactItem from '../types/ReactItem';
+import ReactItem from 'src/types/ReactItem';
 
 const getReactItemsWithKey = <T extends ReactItem>(items: T[]): T[] => {
   if (!items) {

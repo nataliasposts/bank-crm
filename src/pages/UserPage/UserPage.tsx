@@ -1,21 +1,22 @@
 import { useParams } from 'react-router-dom';
-import StyledUserPage from './StyledUserPage';
-import userApiService from '../../api/userApiService';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import UserDto from '../../types/UserDto';
-import transactionApiService from '../../api/transactionApiService';
-import TransactionDto from '../../types/TransactionDto';
-import SearchComponent from '../../components/SearchComponent/SearchComponent';
-import TextEnum from '../../types/enum/TextEnum';
-import UserTransactionDto from '../../types/UserTransactionDto';
+import transactionApiService from 'src/api/transactionApiService';
+import userApiService from 'src/api/userApiService';
+import SearchComponent from 'src/components/SearchComponent/SearchComponent';
+import TransactionDto from 'src/types/TransactionDto';
+import UserDto from 'src/types/UserDto';
+import UserTransactionDto from 'src/types/UserTransactionDto';
+import TextEnum from 'src/types/enum/TextEnum';
+import StyledUserPage from './StyledUserPage';
 
-const UserPage = () => {
+const UserPage: React.FC = () => {
   const [user, setUser] = useState<UserDto>();
   const [sourceArray, setSourceArray] = useState<TransactionDto[]>([]);
   const [targetArray, setTargetArray] = useState<TransactionDto[]>([]);
   const [transactions, setTransactions] = useState<UserTransactionDto>();
   const [searchValue, setSearchValue] = useState<string>('');
   const [sortedTable, setSortedTable] = useState<TransactionDto[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { userId } = useParams();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(10);
@@ -46,6 +47,9 @@ const UserPage = () => {
         })
         .catch((error) => {
           console.error('Error fetching transactions:', error);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     }
   }, [user, currentPage]);
@@ -103,9 +107,11 @@ const UserPage = () => {
       <div className="container">
         <div className="personal-info-row">
           <p className="name"> {user?.name}</p>
-          <p className="amount">
-            <span className="amount-title">Amount:</span> {transactions?.finalSum.toFixed(2)}
-          </p>
+          {isLoading ? null : (
+            <p className="amount">
+              <span className="amount-title">Amount:</span> {transactions?.finalSum.toFixed(2)}
+            </p>
+          )}
         </div>
         <div className="trabsaction-table">
           <SearchComponent onSearch={handleSearch} />
@@ -120,42 +126,48 @@ const UserPage = () => {
               <p>{TextEnum.INCOME}</p>
             </button>
           </div>
-          <table className="table">
-            <thead>
-              <tr className="table-element">
-                <th className="table-element header-table-element">
-                  <p>{TextEnum.TRANSACTION}</p>
-                </th>
-                <th className="table-element header-table-element">
-                  <p>{TextEnum.AMOUNT}</p>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedTable.length > 0
-                ? sortedTable
-                    .filter((t) => t.amount.toString().includes(searchValue))
-                    .map((t) => (
-                      <tr className="table-element click" key={t.key}>
-                        <th className="table-element">
-                          <p className="table-info">{t.sourceId}</p>
-                        </th>
-                        <th>
-                          <p className="table-amount table-info">{t.amount}</p>
-                        </th>
-                      </tr>
-                    ))
-                : null}
-            </tbody>
-          </table>
-          <div className="pagination-buttons">
-            <button onClick={handlePreviousPage} className="button" type="button">
-              <p> {TextEnum.PREVIOUS_BUTTON}</p>
-            </button>
-            <button onClick={handleNextPage} className="button" type="button">
-              <p> {TextEnum.NEXT_BUTTON}</p>
-            </button>
-          </div>
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <div>
+              <table className="table">
+                <thead>
+                  <tr className="table-element">
+                    <th className="table-element header-table-element">
+                      <p>{TextEnum.TRANSACTION}</p>
+                    </th>
+                    <th className="table-element header-table-element">
+                      <p>{TextEnum.AMOUNT}</p>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedTable.length > 0
+                    ? sortedTable
+                        .filter((t) => t.amount.toString().includes(searchValue))
+                        .map((t) => (
+                          <tr className="table-element click" key={t.key}>
+                            <th className="table-element">
+                              <p className="table-info">{t.sourceId}</p>
+                            </th>
+                            <th>
+                              <p className="table-amount table-info">{t.amount}</p>
+                            </th>
+                          </tr>
+                        ))
+                    : null}
+                </tbody>
+              </table>
+              <div className="pagination-buttons">
+                <button onClick={handlePreviousPage} className="button" type="button">
+                  <p> {TextEnum.PREVIOUS_BUTTON}</p>
+                </button>
+                <button onClick={handleNextPage} className="button" type="button">
+                  <p> {TextEnum.NEXT_BUTTON}</p>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </StyledUserPage>

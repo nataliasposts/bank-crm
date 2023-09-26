@@ -1,9 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
 import RoutingPath from './routing';
-import MainPage from '../pages/MainPage/MainPage';
-import UserPage from '../pages/UserPage/UserPage';
+import MainPage from 'src/pages/MainPage/MainPage';
+import UserPage from 'src/pages/UserPage/UserPage';
 
-const RootRouter = () => {
+const RootRouter: React.FC = () => {
   return (
     <Routes>
       <Route path={RoutingPath.DefaultPage} element={<MainPage />} />

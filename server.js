@@ -2,17 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const port = 5000;
 
 const app = express();
 app.use(bodyParser.json());
-app.use(
-  cors({
-    origin: 'https://bank-crm-je6zb.ondigitalocean.app',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
-  })
-);
+app.use(cors());
 
 mongoose.connect(
   'mongodb+srv://nataliasposts:EHCMOdwye4QL0hWm@bank.tf5nxxs.mongodb.net/userslist?retryWrites=true&w=majority',
@@ -82,6 +75,4 @@ app.get('/transactions', async (req, res) => {
   }
 });
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on port ${port}`);
-});
+app.listen('5000', () => console.error(`Server started on port 5000`));

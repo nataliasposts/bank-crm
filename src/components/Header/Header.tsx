@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
+import TextEnum from 'src/types/enum/TextEnum';
 import StyledHeader from './StyledHeader';
-import TextEnum from '../../types/enum/TextEnum';
 
-const Header = () => {
+const Header: React.FC = () => {
   return (
     <StyledHeader>
       <div className="container">
