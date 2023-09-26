@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import transactionApiService from 'src/api/transactionApiService';
 import userApiService from 'src/api/userApiService';
 import SearchComponent from 'src/components/SearchComponent/SearchComponent';
@@ -7,19 +7,23 @@ import TransactionDto from 'src/types/TransactionDto';
 import UserDto from 'src/types/UserDto';
 import UserTransactionDto from 'src/types/UserTransactionDto';
 import TextEnum from 'src/types/enum/TextEnum';
+import ViewType from 'src/types/enum/ViewTypeEnum';
+import MainTable from 'src/components/TableComponents/MainTable';
+import SortedTable from 'src/components/TableComponents/SortedTable';
 import StyledUserPage from './StyledUserPage';
+import getReactItemsWithKey from 'src/mapper/sharedMapper';
 
 const UserPage: React.FC = () => {
   const [user, setUser] = useState<UserDto>();
-  const [sourceArray, setSourceArray] = useState<TransactionDto[]>([]);
-  const [targetArray, setTargetArray] = useState<TransactionDto[]>([]);
   const [transactions, setTransactions] = useState<UserTransactionDto>();
-  const [searchValue, setSearchValue] = useState<string>('');
-  const [sortedTable, setSortedTable] = useState<TransactionDto[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [filteredTransactions, setFilteredTransactions] = useState<TransactionDto[]>([]);
   const { userId } = useParams();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(10);
+  const [viewType, setViewType] = useState<ViewType.ALL | ViewType.INCOMING | ViewType.OUTCOMIG>(
+    ViewType.ALL
+  );
+  const [searchValue, setSearchValue] = useState<string>('');
 
   useEffect(() => {
     if (userId) {
@@ -30,79 +34,43 @@ const UserPage: React.FC = () => {
             setUser(data);
           }
         })
-        .catch((error) => {
-          console.error('Error fetching one user:', error);
-        });
+        .catch(console.error);
     }
   }, [userId]);
 
   useEffect(() => {
     if (user) {
       transactionApiService
-        .fetchUserTransactions(currentPage, itemsPerPage, userId ? userId : '')
+        .fetchUserTransactions(currentPage, 8, userId ? userId : '')
         .then((data) => {
           if (data) {
             setTransactions(data);
+            setFilteredTransactions(data.userTransactions || []);
           }
         })
-        .catch((error) => {
-          console.error('Error fetching transactions:', error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+        .catch(console.error)
+        .finally(() => setIsLoading(false));
     }
   }, [user, currentPage]);
 
-  const userTransaction = useMemo(() => {
-    return transactions?.userTransactions || [];
-  }, [transactions]);
+  const filterTransactions = () => {
+    if (!transactions) return;
 
-  useEffect(() => {
-    if (user && transactions) {
-      const sourceTransactions = transactions.userTransactions.filter(
-        (transaction) => transaction.sourceId === user.id
-      );
+    const filtered =
+      viewType === ViewType.INCOMING
+        ? transactions.userTransactions.filter((t) => t.sourceId === user?.id)
+        : viewType === ViewType.OUTCOMIG
+        ? transactions.userTransactions.filter((t) => t.targetId === user?.id)
+        : transactions.userTransactions;
 
-      const targetTransactions = transactions.userTransactions.filter(
-        (transaction) => transaction.targetId === user.id
-      );
-
-      setSourceArray(sourceTransactions);
-      setTargetArray(targetTransactions);
-      setSortedTable(userTransaction);
-    }
-  }, [user, transactions, userTransaction]);
-
-  const handleSearch = useCallback((value: string) => {
-    setSearchValue(value);
-  }, []);
-
-  const showOnlyOutcoming = () => {
-    setSortedTable(sourceArray ?? []);
+    setFilteredTransactions(filtered);
   };
 
-  const showOnlyIncoming = () => {
-    setSortedTable(targetArray ?? []);
-  };
+  useEffect(filterTransactions, [viewType, transactions]);
 
-  const showAll = () => {
-    setSortedTable(userTransaction);
-  };
-
-  useEffect(() => {
-    setSortedTable(userTransaction);
-  }, [transactions]);
-
-  const handlePreviousPage = () => {
-    setSortedTable(userTransaction);
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setSortedTable(userTransaction);
-    setCurrentPage((prevState) => prevState + 1);
-  };
+  const handleSearch = useCallback((value: string) => setSearchValue(value), []);
+  const handlePreviousPage = () => setCurrentPage((page) => Math.max(1, page - 1));
+  const handleNextPage = () => setCurrentPage((page) => page + 1);
 
   return (
     <StyledUserPage>
@@ -115,55 +83,44 @@ const UserPage: React.FC = () => {
             </p>
           )}
         </div>
-        <div className="trabsaction-table">
+        <div className="transaction-table">
           <SearchComponent onSearch={handleSearch} />
           <div className="button-row">
-            <button type="button" onClick={showAll} className="button">
+            <button onClick={() => setViewType(ViewType.ALL)} className="button" type="button">
               <p>{TextEnum.ALL}</p>
             </button>
-            <button type="button" onClick={showOnlyOutcoming} className="button">
+            <button onClick={() => setViewType(ViewType.OUTCOMIG)} className="button" type="button">
               <p>{TextEnum.OUTCOME}</p>
             </button>
-            <button type="button" onClick={showOnlyIncoming} className="button">
+            <button onClick={() => setViewType(ViewType.INCOMING)} className="button" type="button">
               <p>{TextEnum.INCOME}</p>
             </button>
           </div>
           {isLoading ? (
             <div>Loading...</div>
           ) : (
-            <div>
-              <table className="table">
-                <thead>
-                  <tr className="table-element">
-                    <th className="table-element header-table-element">
-                      <p>{TextEnum.TRANSACTION}</p>
-                    </th>
-                    <th className="table-element header-table-element">
-                      <p>{TextEnum.AMOUNT}</p>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedTable.length > 0
-                    ? sortedTable
-                        .filter((t) => t.amount.toString().includes(searchValue))
-                        .map((t) => (
-                          <tr className="table-element click" key={t.key}>
-                            <th className="table-element">
-                              {user?.id === t.sourceId ? (
-                                <p className="table-info">{t.sourceId}</p>
-                              ) : (
-                                <p className="table-info">{t.targetId}</p>
-                              )}
-                            </th>
-                            <th>
-                              <p className="table-amount table-info">{t.amount}</p>
-                            </th>
-                          </tr>
-                        ))
-                    : null}
-                </tbody>
-              </table>
+            <>
+              {viewType === ViewType.ALL && (
+                <MainTable
+                  searchValue={searchValue}
+                  transactions={getReactItemsWithKey(filteredTransactions)}
+                  userId={user?.id}
+                />
+              )}
+              {viewType === ViewType.INCOMING && (
+                <SortedTable
+                  text={TextEnum.INCOME_FIELD}
+                  transactions={getReactItemsWithKey(filteredTransactions)}
+                  searchValue={searchValue}
+                />
+              )}
+              {viewType === ViewType.OUTCOMIG && (
+                <SortedTable
+                  text={TextEnum.OUTCOME_FIELD}
+                  transactions={getReactItemsWithKey(filteredTransactions)}
+                  searchValue={searchValue}
+                />
+              )}
               <div className="pagination-buttons">
                 <button onClick={handlePreviousPage} className="button" type="button">
                   <p> {TextEnum.PREVIOUS_BUTTON}</p>
@@ -172,7 +129,7 @@ const UserPage: React.FC = () => {
                   <p> {TextEnum.NEXT_BUTTON}</p>
                 </button>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>

@@ -7,7 +7,9 @@ enum TextEnum {
   CLIENT_INFO = "Client's Information",
   MAIN = 'Main',
   PREVIOUS_BUTTON = ' Previous',
-  NEXT_BUTTON = 'Next'
+  NEXT_BUTTON = 'Next',
+  INCOME_FIELD = 'incoming',
+  OUTCOME_FIELD = 'outcoming'
 }
 
 export default TextEnum;
