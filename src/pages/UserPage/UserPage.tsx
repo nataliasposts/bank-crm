@@ -95,10 +95,12 @@ const UserPage: React.FC = () => {
   }, [transactions]);
 
   const handlePreviousPage = () => {
+    setSortedTable(userTransaction);
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
   const handleNextPage = () => {
+    setSortedTable(userTransaction);
     setCurrentPage((prevState) => prevState + 1);
   };
 
@@ -148,7 +150,11 @@ const UserPage: React.FC = () => {
                         .map((t) => (
                           <tr className="table-element click" key={t.key}>
                             <th className="table-element">
-                              <p className="table-info">{t.sourceId}</p>
+                              {user?.id === t.sourceId ? (
+                                <p className="table-info">{t.sourceId}</p>
+                              ) : (
+                                <p className="table-info">{t.targetId}</p>
+                              )}
                             </th>
                             <th>
                               <p className="table-amount table-info">{t.amount}</p>

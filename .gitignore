@@ -9,6 +9,7 @@
 # production
 /build
 *.log*
+package-lock.json
 
 .vscode
 *.swp
